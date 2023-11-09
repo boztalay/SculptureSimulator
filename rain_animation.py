@@ -4,7 +4,7 @@ import random
 
 import sculpy
 
-class RainAnimation(sculpy.ShaderAnimation):
+class RainAnimation(sculpy.ShaderStyleAnimation):
 
     def __init__(self, row_count, column_count):
         super().__init__(row_count, column_count)

@@ -1,6 +1,7 @@
+import enum
 import importlib
+import math
 import sys
-import threading
 import time
 
 from vpython import *
@@ -17,6 +18,24 @@ BALL_RADIUS_MM = 1.0 * 25.4 / 2.0
 BALL_DIAMETER_MM = BALL_RADIUS_MM * 2.0
 BALL_SPACING_MM = 50.0
 
+def map_range(in_min, in_max, out_min, out_max, value):
+    if in_min == in_max:
+        return out_max
+
+    return (((value - in_min) / (in_max - in_min)) * (out_max - out_min)) + out_min
+
+def clamp(min_value, max_value, value):
+    if value < min_value:
+        return min_value
+    elif value > max_value:
+        return max_value
+    else:
+        return value
+
+def map_range_clamp(in_min, in_max, out_min, out_max, value):
+    mapped_value = map_range(in_min, in_max, out_min, out_max, value)
+    return clamp(out_min, out_max, mapped_value)
+
 class Animation():
 
     def __init__(self, row_count, column_count):
@@ -26,7 +45,7 @@ class Animation():
     def get_next_frame(self, timestamp, time_delta, last_frame):
         raise NotImplementedError('Animation subclasses must implement get_next_frame()')
 
-class ShaderAnimation(Animation):
+class ShaderStyleAnimation(Animation):
 
     def get_next_frame(self, timestamp, time_delta, last_frame):
         next_frame = []
@@ -48,7 +67,53 @@ class ShaderAnimation(Animation):
         return next_frame
 
     def get_ball_position(self, row, column, timestamp, time_delta, last_position):
-        raise NotImplementedError('ShaderAnimation subclasses must implement get_next_frame()')
+        raise NotImplementedError('ShaderStyleAnimation subclasses must implement get_next_frame()')
+
+class TargetedAnimation(Animation):
+
+    def __init__(self, row_count, column_count):
+        super().__init__(row_count, column_count)
+
+        self.targets = []
+        for _ in range(0, row_count):
+            target_row = []
+            for _ in range(0, column_count):
+                target_row.append(0.0)
+            self.targets.append(target_row)
+
+        self.velocity = MAX_BALL_VELOCITY * 0.9
+
+    def get_next_frame(self, timestamp, time_delta, last_frame):
+        next_targets = self.get_next_targets(timestamp, time_delta, self.targets)
+        if timestamp == 0.0:
+            return next_targets
+
+        self.targets = next_targets
+
+        new_frame = []
+        for row_index, row in enumerate(last_frame):
+            new_row = []
+
+            for column_index, position in enumerate(row):
+                target = self.targets[row_index][column_index]
+
+                distance_to_move = self.velocity * time_delta
+                next_position = target
+
+                delta = abs(target - position)
+                if delta > distance_to_move:
+                    if position > target:
+                        next_position = position - distance_to_move
+                    else:
+                        next_position = position + distance_to_move
+
+                new_row.append(next_position)
+            new_frame.append(new_row)
+
+        return new_frame
+
+    def get_next_targets(self, timestamp, time_delta, current_targets):
+        raise NotImplementedError('TargetedAnimation subclasses must implement get_next_targets()')
 
 class SimulatedSculpture():
 
@@ -176,10 +241,15 @@ class Animator():
     def run_animation(self):
         last_frame_time = None
 
+        initial_frame = self.animation.get_next_frame(0.0, 0.0, self.sculpture.get_ball_positions())
+        self.sculpture.set_ball_positions(initial_frame)
+
+        start_time = time.monotonic()
+
         while True:
             last_frame = self.sculpture.get_ball_positions()
 
-            next_frame_time = time.monotonic()
+            next_frame_time = time.monotonic() - start_time
             time_delta = 0.0
             if last_frame_time is not None:
                 time_delta = next_frame_time - last_frame_time

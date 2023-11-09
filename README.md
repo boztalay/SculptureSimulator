@@ -1,6 +1,8 @@
 SculptureSimulator
 ==================
 
+https://github.com/boztalay/SculptureSimulator/assets/1679999/b0d48cf5-c930-4d06-b07f-44beba6d31a0
+
 This is a lightweight simulator for the kinetic sculpture to help with
 developing animations. Any animations you create with this can be used
 directly on the physical sculpture!

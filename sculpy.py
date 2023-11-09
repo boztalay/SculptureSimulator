@@ -219,8 +219,12 @@ class SimulatedSculpture():
 
         for row_index, row in enumerate(frame):
             for column_index, frame_position in enumerate(row):
-                last_position = last_positions[row_index][column_index]
+                if frame_position > 0.0:
+                    print(f'WARNING: Ball was commanded to move above the top of the sculpture! {frame_position}')
+                elif frame_position < -1.0 * MAX_DISTANCE_STEPS:
+                    print(f'WARNING: Ball was commanded to move beyond the range of the sculpture! {frame_position} vs -{MAX_DISTANCE_STEPS}')
 
+                last_position = last_positions[row_index][column_index]
                 if time_since_last_frame is not None:
                     velocity = float(frame_position - last_position) / time_since_last_frame
                     if abs(velocity) > MAX_BALL_VELOCITY:

@@ -1,7 +1,3 @@
-import math
-import time
-import random
-
 import sculpy
 
 class SampleTargetedAnimation(sculpy.TargetedAnimation):
@@ -11,7 +7,7 @@ class SampleTargetedAnimation(sculpy.TargetedAnimation):
 
         self.patterns = []
 
-        offset = -20000.0
+        offset = -40000.0
         distance = 2000.0
         top = offset
         bottom = top - distance
@@ -101,8 +97,8 @@ class SampleTargetedAnimation(sculpy.TargetedAnimation):
         self.patterns.append(pattern)
 
     def get_next_targets(self, timestamp, time_delta, current_targets):
-        # Index will increment every 3 seconds and wrap through the range [0, len(self.patterns)]
-        index = int(timestamp / 3.0) % len(self.patterns)
+        # Index will increment every 2 seconds and wrap through the range [0, len(self.patterns)]
+        index = int(timestamp / 2.0) % len(self.patterns)
         pattern = self.patterns[index]
         return pattern
 

@@ -109,12 +109,13 @@ class SampleTargetedAnimation(sculpy.TargetedAnimation):
 ANIMATION_CLASS = SampleTargetedAnimation
 ```
 
-#### Notes, tips, etc
+Notes, tips, etc
+----------------
 
-  - Valid position values range between 0.0 (at the top of the sculpture) and
-    -95000.0 (all the way at the bottom of the sculpture's range)
+  - Valid position values range from `0.0` (at the top of the sculpture) to
+    `-95000.0` (all the way at the bottom of the sculpture's range)
   - There's a maximum velocity that the sculpture can move the balls, which is
-    4500.0 points/s, or ~2.8 inches/s
+    `4500.0` points/s, or ~2.8 inches/s
     - The simulator doesn't enforce this limit, but it will issue warnings!
   - The sculpture runs at about 20 frames per second
   - Try to use `timestamp` and `time_delta` directly as much as you can (instead

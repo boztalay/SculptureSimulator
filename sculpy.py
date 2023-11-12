@@ -228,7 +228,7 @@ class SimulatedSculpture():
                 if time_since_last_frame is not None:
                     velocity = float(frame_position - last_position) / time_since_last_frame
                     if abs(velocity) > MAX_BALL_VELOCITY:
-                        print(f'WARNING: Ball was commanded to move faster than the max velocity! ({velocity} vs {MAX_BALL_VELOCITY} points/s)')
+                        print(f'WARNING: Ball was commanded to move faster than the max velocity! ({abs(velocity)} vs {MAX_BALL_VELOCITY} points/s)')
                 ball = self.balls[row_index][column_index]
                 position = self.ball_start_y + (frame_position * STEP_SIZE_MM)
                 ball.pos = vector(ball.pos.x, position, ball.pos.z)

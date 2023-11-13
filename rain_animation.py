@@ -23,19 +23,22 @@ class RainAnimation(sculpy.ShaderStyleAnimation):
             return top
 
         ball_state = self.ball_states[row][column]
-        velocity = base_velocity + (375.0 * (self.column_count - column - 1))
+        max_velocity = base_velocity + (375.0 * (self.column_count - column - 1))
+
 
         new_position = last_position
 
         if ball_state is None:
-            if random.randrange(0, 400) == 0:
+            if random.randrange(0, 500) == 0:
                 ball_state = False
         elif ball_state == False:
+            velocity = sculpy.map_range_clamp(top, bottom * 0.10, base_velocity * 0.5, max_velocity, last_position)
             new_position -= velocity * time_delta
             if new_position <= bottom:
                 new_position = bottom
                 ball_state = True
         elif ball_state == True:
+            velocity = max_velocity
             new_position += velocity * time_delta
             if new_position >= top:
                 new_position = top

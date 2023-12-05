@@ -25,7 +25,6 @@ class RainAnimation(sculpy.ShaderStyleAnimation):
         ball_state = self.ball_states[row][column]
         max_velocity = base_velocity + (375.0 * (self.column_count - column - 1))
 
-
         new_position = last_position
 
         if ball_state is None:
